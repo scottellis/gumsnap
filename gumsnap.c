@@ -245,7 +245,7 @@ static int read_frame(void)
 	}
 	
 	rgbImg = convert_image(yuvImg);
-	if (rgbImg) {
+	if (!rgbImg) {
 		printf("Error converting yuyv image to rgb\n");
 		exit(1);
 	}
