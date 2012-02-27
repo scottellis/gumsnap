@@ -51,13 +51,10 @@ then run make -f Makefile-cross.
         Usage: ./gumsnap [options]
 
         Options:
-        -b | --brightness     Brightness, 0-255, default 16
-        -c | --contrast       Contrast, 0-255, default 16
         -e | --exposure       Exposure 2-566, default 480
         -g | --gain           Analog gain, 16-64, default 16
         -E | --auto-exposure  0 or 1
         -G | --auto-gain      0 or 1
-        -x | --color-effects  0-2
         -H | --hflip          0 or 1
         -V | --vflip          0 or 1
         -n | --nosnap         Do not take picture

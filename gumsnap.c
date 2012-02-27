@@ -7,14 +7,11 @@
 
    The following controls are provided
 
-   V4L2_CID_BRIGHTNESS : 0-255, step 1, default 16
-   V4L2_CID_CONTRAST : 0-255, step 1, default 16
    V4L2_CID_EXPOSURE : 2-566, step 1, default 480
    V4L2_CID_AUTOGAIN : boolean
    V4L2_CID_GAIN : 16-64, step 1, default 16
    V4L2_CID_HFLIP : boolean
    V4L2_CID_VFLIP : boolean
-   V4L2_CID_COLORFX : 0-2 { none, bw, sepia }
    V4L2_CID_EXPOSURE_AUTO : boolean
 
    Image Dimensions : w x h : 752 x 480
@@ -280,12 +277,6 @@ static void set_control(int id, int value, const char *name)
 
 static void set_controls()
 {	
-	if (brightness >= 0)
-		set_control(V4L2_CID_BRIGHTNESS, brightness, "brightness");
-
-	if (contrast >= 0)
-		set_control(V4L2_CID_CONTRAST, contrast, "contrast");
-
 	if (exposure >= 0)
 		set_control(V4L2_CID_EXPOSURE, exposure, "exposure");
 
@@ -297,9 +288,6 @@ static void set_controls()
 
 	if (auto_exposure >= 0)
 		set_control(V4L2_CID_EXPOSURE_AUTO, auto_exposure, "auto-exposure");
-
-	if (color_effects >= 0)
-		set_control(V4L2_CID_COLORFX, color_effects, "color-effects");
 
 	if (hflip >= -1)
 		set_control(V4L2_CID_HFLIP, hflip, "hflip");
@@ -338,13 +326,10 @@ static void show_setting(int id, const char *name)
 
 static void show_settings()
 {
-	show_setting(V4L2_CID_BRIGHTNESS, "brightness");
-	show_setting(V4L2_CID_CONTRAST, "contrast");
 	show_setting(V4L2_CID_EXPOSURE, "exposure");
 	show_setting(V4L2_CID_GAIN, "gain");
 	show_setting(V4L2_CID_EXPOSURE_AUTO, "auto-exposure");
 	show_setting(V4L2_CID_AUTOGAIN, "auto-gain");
-	show_setting(V4L2_CID_COLORFX, "color-effects");
 	show_setting(V4L2_CID_HFLIP, "hflip");
 	show_setting(V4L2_CID_VFLIP, "vflip");
 }
@@ -533,14 +518,11 @@ static void usage(char *argv_0)
 {
 	printf("Usage: %s [options]\n\n"
 		"Options:\n"
-//		"-b | --brightness     Brightness, 0-255, default 16\n"
-//		"-c | --contrast       Contrast, 0-255, default 16\n"
 		"-e | --exposure       Exposure 2-566, default 480\n"
 		"-g | --gain           Analog gain, 16-64, default 16\n"
 
 		"-E | --auto-exposure  0 or 1\n"
 		"-G | --auto-gain      0 or 1\n"
-		"-x | --color-effects  0-2\n"
 		"-H | --hflip          0 or 1\n"
 		"-V | --vflip          0 or 1\n"
 
@@ -553,16 +535,13 @@ static void usage(char *argv_0)
 	exit(1);
 }
 
-static const char short_opts [] = "e:g:E:G:x:H:V:nsh";
+static const char short_opts [] = "e:g:E:G:H:V:nsh";
 
 static const struct option long_opts [] = {
-//	{ "brightness",	    required_argument,  NULL,  'b' },
-//	{ "contrast",       required_argument,  NULL,  'c' },
 	{ "exposure",       required_argument,  NULL,  'e' },
 	{ "gain",           required_argument,  NULL,  'g' },
     { "auto-exposure",  required_argument,  NULL,  'E' },
     { "auto-gain",      required_argument,  NULL,  'G' },
-    { "color-effects",  required_argument,  NULL,  'x' },
     { "hflip",          required_argument,  NULL,  'H' },
 	{ "vflip",          required_argument,  NULL,  'V' },
 	{ "nosnap",         no_argument,        NULL,  'n' },
@@ -596,22 +575,6 @@ int main(int argc, char **argv)
 			break;
 
 		switch (c) {
-			case 'b':
-				brightness = atol(optarg);
-				if (brightness < 0 || brightness > 255) {
-					printf("Invalid brightness: %d\n", brightness);
-					usage(argv[0]);
-				}
-				break;
-
-			case 'c':
-				contrast = atol(optarg);
-				if (contrast < 0 || contrast > 255) {
-					printf("Invalid contrast: %d\n", contrast);
-					usage(argv[0]);
-				}
-				break;
-
 			case 'e':
 				exposure = atol(optarg);
 				if (exposure < 2 || exposure > 566) {
@@ -640,14 +603,6 @@ int main(int argc, char **argv)
 				auto_gain = atol(optarg);
 				if (auto_gain < 0 || auto_gain > 1) {
 					printf("Invalid auto-gain: %d\n", auto_gain);
-					usage(argv[0]);
-				}
-				break;
-
-			case 'x':
-				color_effects = atol(optarg);
-				if (color_effects < 0 || color_effects > 2) {
-					printf("Invalid color-effects: %d\n", color_effects);
 					usage(argv[0]);
 				}
 				break;
