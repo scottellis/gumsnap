@@ -533,8 +533,8 @@ static void usage(char *argv_0)
 {
 	printf("Usage: %s [options]\n\n"
 		"Options:\n"
-		"-b | --brightness     Brightness, 0-255, default 16\n"
-		"-c | --contrast       Contrast, 0-255, default 16\n"
+//		"-b | --brightness     Brightness, 0-255, default 16\n"
+//		"-c | --contrast       Contrast, 0-255, default 16\n"
 		"-e | --exposure       Exposure 2-566, default 480\n"
 		"-g | --gain           Analog gain, 16-64, default 16\n"
 
@@ -553,11 +553,11 @@ static void usage(char *argv_0)
 	exit(1);
 }
 
-static const char short_opts [] = "b:c:e:g:E:G:x:H:V:nsh";
+static const char short_opts [] = "e:g:E:G:x:H:V:nsh";
 
 static const struct option long_opts [] = {
-	{ "brightness",	    required_argument,  NULL,  'b' },
-	{ "contrast",       required_argument,  NULL,  'c' },
+//	{ "brightness",	    required_argument,  NULL,  'b' },
+//	{ "contrast",       required_argument,  NULL,  'c' },
 	{ "exposure",       required_argument,  NULL,  'e' },
 	{ "gain",           required_argument,  NULL,  'g' },
     { "auto-exposure",  required_argument,  NULL,  'E' },
