@@ -91,31 +91,6 @@ static int xioctl(int fd, int request, void *arg)
 	return r;
 }
 
-static void write_image(const void *p, size_t length)
-{
-	int fd;
-	int flags = O_CREAT | O_RDWR | O_TRUNC;
-	mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH;
-
-	if (format == V4L2_PIX_FMT_SGRBG10)
-		fd = open("bayer.img", flags, mode);
-	else if (format == V4L2_PIX_FMT_YUYV)
-		fd = open("yuyv.img", flags, mode);
-	else if (format == V4L2_PIX_FMT_UYVY)
-		fd = open("uyvy.img", flags, mode);
-	else
-		fd = open("mono.img", flags, mode);
-
-	if (fd < 0) {
-		perror("open(<image>)");
-		return;
-	}
-
-	write(fd, p, length);
-
-	close(fd);
-}
-
 IplImage *load_raw_image(char *raw, int size)
 {
 	IplImage *y, *u, *v, *img;
@@ -191,23 +166,9 @@ IplImage *convert_image(IplImage *yuv)
 
 void save_image(IplImage *img)
 {
-/*
-	char *p;
-	char *s = strdup(orig_file);
-	
-	if (!s)
-		return;
+	// need to generate a timestamp filename here
 
-	p = strrchr(s, '.');
-
-	if (!p)
-		return;
-
-	strcpy(p, ".jpg");
-*/
 	cvSaveImage("caspa.jpg", img, 0);
-
-//	free(s);
 }
 
 static int read_frame(void)
@@ -223,21 +184,20 @@ static int read_frame(void)
 
 	if (-1 == xioctl(fd, VIDIOC_DQBUF, &buf)) {
 		switch (errno) {
-		case EAGAIN:
-			return 0;
+			case EAGAIN:
+				return 0;
 
-		case EIO:
-			/* Could ignore EIO, see spec. */
-			/* fall through */
+			case EIO:
+				/* Could ignore EIO, see spec. */
+				/* fall through */
 
-		default:
-			errno_exit("VIDIOC_DQBUF");
+			default:
+				errno_exit("VIDIOC_DQBUF");
 		}
 	}
 
 	assert(buf.index < num_buffers);
 
-	//write_image(buffers[buf.index].start, buffers[buf.index].length);
 	yuvImg = load_raw_image(buffers[buf.index].start, buffers[buf.index].length);
 	if (!yuvImg) {
 		printf("Error reading yuyv image into an OpenCV image buffer\n");
@@ -636,114 +596,93 @@ int main(int argc, char **argv)
 			break;
 
 		switch (c) {
-		case 0: /* getopt_long() flag */
-			break;
-/*
-		case 'f':
-			if (!strcasecmp(optarg, "bayer")) {
-				//format = V4L2_PIX_FMT_SGRBG10;
-				printf("Format bayer disabled. Page fault retrieving image.\n");
-				exit(1);
-			}
-			else if (!strcasecmp(optarg, "yuyv")) {
-				format = V4L2_PIX_FMT_YUYV;
-			}
-			else if (!strcasecmp(optarg, "uyvy")) {
-				format = V4L2_PIX_FMT_UYVY;				
-			}
-			else {
-				printf("Invalid pixel format: %s\n", optarg);
+			case 'b':
+				brightness = atol(optarg);
+				if (brightness < 0 || brightness > 255) {
+					printf("Invalid brightness: %d\n", brightness);
+					usage(argv[0]);
+				}
+				break;
+
+			case 'c':
+				contrast = atol(optarg);
+				if (contrast < 0 || contrast > 255) {
+					printf("Invalid contrast: %d\n", contrast);
+					usage(argv[0]);
+				}
+				break;
+
+			case 'e':
+				exposure = atol(optarg);
+				if (exposure < 2 || exposure > 566) {
+					printf("Invalid exposure: %d\n", exposure);
+					usage(argv[0]);
+				}
+				break;
+
+			case 'g':
+				gain = atol(optarg);
+				if (gain < 16 || gain > 64) {
+					printf("Invalid gain: %d\n", gain);
+					usage(argv[0]);
+				}
+				break;
+
+			case 'E':
+				auto_exposure = atol(optarg);
+				if (auto_exposure < 0 || auto_exposure > 1) {
+					printf("Invalid auto-exposure: %d\n", auto_exposure);
+					usage(argv[0]);
+				}
+				break;
+
+			case 'G':
+				auto_gain = atol(optarg);
+				if (auto_gain < 0 || auto_gain > 1) {
+					printf("Invalid auto-gain: %d\n", auto_gain);
+					usage(argv[0]);
+				}
+				break;
+
+			case 'x':
+				color_effects = atol(optarg);
+				if (color_effects < 0 || color_effects > 2) {
+					printf("Invalid color-effects: %d\n", color_effects);
+					usage(argv[0]);
+				}
+				break;
+
+			case 'H':
+				hflip = atol(optarg);
+				if (hflip < 0 || hflip > 1) {
+					printf("Invalid hflip: %d\n", hflip);
+					usage(argv[0]);
+				}
+				break;
+
+			case 'V':
+				vflip = atol(optarg);
+				if (vflip < 0 || vflip > 1) {
+					printf("Invalid vflip: %d\n", vflip);
+					usage(argv[0]);
+				}
+				break;
+
+			case 'n':
+				snap = 0;
+				break;
+
+			case 's':
+				show = 1;
+				break;
+
+			case 'h':
 				usage(argv[0]);
-			}
-			break;
-*/
-		case 'b':
-			brightness = atol(optarg);
-			if (brightness < 0 || brightness > 255) {
-				printf("Invalid brightness: %d\n", brightness);
+				break;
+
+			default:
 				usage(argv[0]);
-			}
-			break;
-
-		case 'c':
-			contrast = atol(optarg);
-			if (contrast < 0 || contrast > 255) {
-				printf("Invalid contrast: %d\n", contrast);
-				usage(argv[0]);
-			}
-			break;
-
-		case 'e':
-			exposure = atol(optarg);
-			if (exposure < 2 || exposure > 566) {
-				printf("Invalid exposure: %d\n", exposure);
-				usage(argv[0]);
-			}
-			break;
-
-		case 'g':
-			gain = atol(optarg);
-			if (gain < 16 || gain > 64) {
-				printf("Invalid gain: %d\n", gain);
-				usage(argv[0]);
-			}
-			break;
-
-		case 'E':
-			auto_exposure = atol(optarg);
-			if (auto_exposure < 0 || auto_exposure > 1) {
-				printf("Invalid auto-exposure: %d\n", auto_exposure);
-				usage(argv[0]);
-			}
-			break;
-
-		case 'G':
-			auto_gain = atol(optarg);
-			if (auto_gain < 0 || auto_gain > 1) {
-				printf("Invalid auto-gain: %d\n", auto_gain);
-				usage(argv[0]);
-			}
-			break;
-
-		case 'x':
-			color_effects = atol(optarg);
-			if (color_effects < 0 || color_effects > 2) {
-				printf("Invalid color-effects: %d\n", color_effects);
-				usage(argv[0]);
-			}
-			break;
-
-		case 'H':
-			hflip = atol(optarg);
-			if (hflip < 0 || hflip > 1) {
-				printf("Invalid hflip: %d\n", hflip);
-				usage(argv[0]);
-			}
-			break;
-
-		case 'V':
-			vflip = atol(optarg);
-			if (vflip < 0 || vflip > 1) {
-				printf("Invalid vflip: %d\n", vflip);
-				usage(argv[0]);
-			}
-			break;
-
-		case 'n':
-			snap = 0;
-			break;
-
-		case 's':
-			show = 1;
-			break;
-
-		case 'h':
-			usage(argv[0]);
-			break;
-
-		default:
-			usage(argv[0]);
-			exit(EXIT_FAILURE);
+				exit(EXIT_FAILURE);
 		}
 	}
 
