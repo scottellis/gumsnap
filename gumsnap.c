@@ -170,9 +170,6 @@ load_raw_image_done:
 
 	if (v)	
 		cvReleaseImage(&v);
-	
-	if (raw)
-		free(raw);
 
 	return img;
 }
