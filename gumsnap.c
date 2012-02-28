@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <malloc.h>
+#include <time.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/time.h>
@@ -163,9 +164,20 @@ IplImage *convert_image(IplImage *yuv)
 
 void save_image(IplImage *img)
 {
-	// need to generate a timestamp filename here
+	char s[256];
 
-	cvSaveImage("caspa.jpg", img, 0);
+#ifdef DEBUG
+	// for debugging, easier to keep the name constant
+	strcpy(s, "caspa.jpg");
+#else
+	time_t t = time(0);
+
+	struct tm *tm = localtime(&t);
+
+	strftime(s, sizeof(s) - 1, "%Y%m%d_%H%M%S.jpg", tm);
+#endif
+
+	cvSaveImage(s, img, 0);
 }
 
 static int read_frame(void)
