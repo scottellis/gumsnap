@@ -1,7 +1,6 @@
 # caspa-console-image
 # Minimal image for testing Gumstix Caspa module
 # Includes compiler tools, OpenCV dev and git
-# Doesn't do network setup, you'll have to do that manually.
 # 
 
 DEPENDS = "task-sdk-native"

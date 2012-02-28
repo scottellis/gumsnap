@@ -1,6 +1,6 @@
-# caspa-console-image
+# caspa-dsp console-image
 # Minimal image for testing Gumstix Caspa module
-# Includes compiler tools, OpenCV dev and git
+# Includes compiler tools, OpenCV and git
 # Also includes DSP binaries.
 # 
 
