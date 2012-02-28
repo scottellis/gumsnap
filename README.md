@@ -40,12 +40,15 @@ and run make.
 
 There is a Makefile-cross for cross-builds using the OE tools.
 
-Customize for your OETMP or define OETMP it in your environment,
-then run make -f Makefile-cross.
+Customize for your OETMP or define OETMP it in your environment, then run 
+
+        make -f Makefile-cross
 
 
   Usage
 -------
+
+Here is a sample session.
 
         root@caspa:~/gumsnap# ./gumsnap -h
         Usage: ./gumsnap [options]
@@ -62,18 +65,30 @@ then run make -f Makefile-cross.
         -h | --help           Print this message
 
 
+        root@caspa:~/gumsnap# ./gumsnap -n -s
+        exposure:480
+        gain:16
+        auto-exposure:1
+        auto-gain:1
+        hflip:1
+        vflip:1
 
-If the -n option is not provided, gumsnap will take one picture and save
+        root@caspa:~/gumsnap# ./gumsnap
+        snap done, writing image
+
+
+As long as -n is not in the options, gumsnap will take one picture and save
 the image in the local directory as caspa.jpg. 
 
-All parameters will be used if provided. The camera is turned off after 
-the snapshot is retrieved.
+Any parameters will be used if provided. The camera is turned off again
+after the snapshot is retrieved.
 
 The image size is 640x480 and the pixel format requested from the camera
 is yuyv.
 
-BUG: There is a problem with using the mt9v032 driver this way because
-it resets the exposure to the maximum value on every restart, which for 
-this program is every snapshot. I will post a patch for this shortly.
+There are some additional driver patches to the Gumstix OE repo to fix
+various bugs I found. Recipes for a rootfs image with developer tools, 
+the kernel and all patches can be found in the overo/ subdirectory.
+
 
 
