@@ -208,6 +208,7 @@ static int read_frame(int count)
 	assert(buf.index < num_buffers);
 
 	if (count == 9) {
+		printf("writing image\n");
 		yuvImg = load_raw_image(buffers[buf.index].start, buffers[buf.index].length);
 		if (!yuvImg) {
 			printf("Error reading yuyv image into an OpenCV image buffer\n");
@@ -241,6 +242,7 @@ static void mainloop(void)
 
 	count = 0;
 
+	printf("snapping ");
 	while (count < 10) {
 		FD_ZERO (&fds);
 		FD_SET (fd, &fds);
@@ -263,7 +265,8 @@ static void mainloop(void)
 			exit(EXIT_FAILURE);
 		}
 
-		printf("snap done, writing image\n");
+		//printf("snap done, writing image\n");
+		printf(".");
 
 		if (read_frame(count))
 			count++;
