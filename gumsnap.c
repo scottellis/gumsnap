@@ -208,7 +208,7 @@ static int read_frame(int count)
 	assert(buf.index < num_buffers);
 
 	if (count == 9) {
-		printf("writing image\n");
+		printf(" writing image\n");
 		yuvImg = load_raw_image(buffers[buf.index].start, buffers[buf.index].length);
 		if (!yuvImg) {
 			printf("Error reading yuyv image into an OpenCV image buffer\n");
