@@ -301,10 +301,10 @@ static void set_controls()
 	if (auto_exposure >= 0)
 		set_control(V4L2_CID_EXPOSURE_AUTO, auto_exposure, "auto-exposure");
 
-	if (hflip >= -1)
+	if (hflip >= 0)
 		set_control(V4L2_CID_HFLIP, hflip, "hflip");
 
-	if (vflip >= -1)
+	if (vflip >= 0)
 		set_control(V4L2_CID_VFLIP, vflip, "vflip");
 }
 
