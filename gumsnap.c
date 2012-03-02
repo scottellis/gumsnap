@@ -180,7 +180,7 @@ void save_image(IplImage *img)
 	cvSaveImage(s, img, 0);
 }
 
-static int read_frame(void)
+static int read_frame(int count)
 {
 	IplImage *yuvImg;
 	IplImage *rgbImg;
@@ -207,22 +207,24 @@ static int read_frame(void)
 
 	assert(buf.index < num_buffers);
 
-	yuvImg = load_raw_image(buffers[buf.index].start, buffers[buf.index].length);
-	if (!yuvImg) {
-		printf("Error reading yuyv image into an OpenCV image buffer\n");
-		exit(1);
-	}
+	if (count == 9) {
+		yuvImg = load_raw_image(buffers[buf.index].start, buffers[buf.index].length);
+		if (!yuvImg) {
+			printf("Error reading yuyv image into an OpenCV image buffer\n");
+			exit(1);
+		}
 	
-	rgbImg = convert_image(yuvImg);
-	if (!rgbImg) {
-		printf("Error converting yuyv image to rgb\n");
-		exit(1);
-	}
+		rgbImg = convert_image(yuvImg);
+		if (!rgbImg) {
+			printf("Error converting yuyv image to rgb\n");
+			exit(1);
+		}
 	
-	save_image(rgbImg);
+		save_image(rgbImg);
 
-	cvReleaseImage(&yuvImg);
-	cvReleaseImage(&rgbImg);
+		cvReleaseImage(&yuvImg);
+		cvReleaseImage(&rgbImg);
+	}
 
 	if (-1 == xioctl(fd, VIDIOC_QBUF, &buf))
 		errno_exit("VIDIOC_QBUF");
@@ -235,40 +237,38 @@ static void mainloop(void)
 	unsigned int count;
 	fd_set fds;
 	struct timeval tv;
-	int r;
+	int result;
 
-	count = 1;
+	count = 0;
 
-	while (count-- > 0) {
-		for (;;) {
-			FD_ZERO (&fds);
-			FD_SET (fd, &fds);
+	while (count < 10) {
+		FD_ZERO (&fds);
+		FD_SET (fd, &fds);
 
-			/* Timeout. */
-			tv.tv_sec = 30;
-			tv.tv_usec = 0;
+		/* Timeout. */
+		tv.tv_sec = 10;
+		tv.tv_usec = 0;
 
-			r = select(fd + 1, &fds, NULL, NULL, &tv);
+		result = select(fd + 1, &fds, NULL, NULL, &tv);
 
-			if (-1 == r) {
-				if (EINTR == errno)
-					continue;
+		if (-1 == result) {
+			if (EINTR == errno)
+				continue;
 
-				errno_exit("select");
-			}
-
-			if (0 == r) {
-				fprintf(stderr, "select timeout\n");
-				exit(EXIT_FAILURE);
-			}
-
-			printf("snap done, writing image\n");
-
-			if (read_frame())
-				break;
-
-			/* EAGAIN - continue select loop. */
+			errno_exit("select");
 		}
+
+		if (0 == result) {
+			fprintf(stderr, "select timeout\n");
+			exit(EXIT_FAILURE);
+		}
+
+		printf("snap done, writing image\n");
+
+		if (read_frame(count))
+			count++;
+
+		/* EAGAIN - continue select loop. */
 	}
 }
 
