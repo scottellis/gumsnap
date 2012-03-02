@@ -42,6 +42,9 @@
 #include <cv.h>
 #include <highgui.h>
 
+// take this many images, but only save the last one
+#define IMAGE_NUM_TO_SAVE 10
+ 
 #define CASPA_IMAGE_WIDTH 640
 #define CASPA_IMAGE_HEIGHT 480
 
@@ -207,7 +210,7 @@ static int read_frame(int count)
 
 	assert(buf.index < num_buffers);
 
-	if (count == 9) {
+	if (count == IMAGE_NUM_TO_SAVE) {
 		printf(" writing image\n");
 		yuvImg = load_raw_image(buffers[buf.index].start, buffers[buf.index].length);
 		if (!yuvImg) {
@@ -240,14 +243,14 @@ static void mainloop(void)
 	struct timeval tv;
 	int result;
 
-	count = 0;
+	count = 1;
 
 	printf("snapping ");
-	while (count < 10) {
+
+	while (count <= IMAGE_NUM_TO_SAVE) {
 		FD_ZERO (&fds);
 		FD_SET (fd, &fds);
 
-		/* Timeout. */
 		tv.tv_sec = 10;
 		tv.tv_usec = 0;
 
@@ -265,13 +268,10 @@ static void mainloop(void)
 			exit(EXIT_FAILURE);
 		}
 
-		//printf("snap done, writing image\n");
 		printf(".");
 
 		if (read_frame(count))
 			count++;
-
-		/* EAGAIN - continue select loop. */
 	}
 }
 
