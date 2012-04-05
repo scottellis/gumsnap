@@ -1,7 +1,8 @@
 Binaries can be found at http://www.jumpnowtek.com/caspa
 
+These are the versions
 
-MLO-overo-1.5.0+r24+gitr358f33dcae0f7c57600b80b02dfce6147160aeb3-r24
+MLO-overo -> MLO-overo-1.5.0+r24+gitr358f33dcae0f7c57600b80b02dfce6147160aeb3-r24
 
 u-boot-overo.bin -> u-boot-overo-2011.09+r75+gitr4be3f92ac9abd019b60ec6a63ead29a528664ead-r75.bin
 
@@ -23,11 +24,10 @@ You'll also have to import the Qt environment found here
 
     /usr/share/qt4/environment-setup
 
-You can add it to your .profile
+You can add it to your .profile like this
 
     root@overo:~# cat .profile
     source /usr/share/qt4/environment-setup
-
 
 
 
