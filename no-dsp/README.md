@@ -30,4 +30,6 @@ You can add it to your .profile like this
     source /usr/share/qt4/environment-setup
 
 
+The version of Qt is 4.7.1
+The version of OpenCV is 2.2
 
